@@ -55,17 +55,16 @@ rm(Feb1); rm(Feb2); rm(plot1alldata)
 # x-axis value (Watt is normally capitalized as a unit of Power)
 # main title is "Global Active Power"
 
-# Opens the console device to save the plot to a file
-png("plot1.png", width=480, height=480, units="px",
-    res=72, pointsize=12, bg = "transparent")
-
 # Create histogram, Main title set, red color, 12 boxes of data
 par(mfrow=c(1,1))
+par(mar=c(4,4,2,1))
 hist(plot1data$Global_active_power, col="red", breaks=12,
      main = "Global Active Power",
      xlab = "Global Active Power (kiloWatts)",
      ylab = "Frequency")
 # Saves the created plot with information to directory
-
+# Copies the created file to the console device to save the plot to a file
+dev.copy(png, file="plot1.png", width=480, height=480, units="px",
+    res=72, pointsize=12, bg = "transparent")
 dev.off() #closes the console device (png)
 

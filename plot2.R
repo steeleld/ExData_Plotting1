@@ -1,13 +1,10 @@
-# STUCK WITH datetime -- can't get to work and plot
-
-
 # Exploratory Data Analysis Coursera Course: Project 1
-# File: plo12.R
+# File: plot2.R
 # Mar 13 2016
 
 # Load used libraries for script.  Common ones at top, with ones used in
 # this particular script un-commented
-library(lubridate) # for working with dates
+#library(lubridate) # for working with dates
 library(dplyr) # for data manipulation, e.g. filter, mutate, select, distinct, arrange
 # library(tidyr) # for data tidying, e.g. tbl_df, gather, separate, spread
 #library(ggplot2) # for specifying plot parameters, e.g. output dpi, size
@@ -39,34 +36,38 @@ Feb1 <- filter(plot2alldata,Date=="1/2/2007") #Searching as text char for Feb1
 Feb2 <- filter(plot2alldata,Date=="2/2/2007") #Searching as text char for Feb2
 plot2data <-rbind(Feb1,Feb2)
 
-# Paste the day and the time information by using dplyr library to 
-# mutate the Date to get the day of the week.  
-plot2data <- mutate(plot2data, DateTime=paste(plot2data$Date, plot2data$Time),
-                    datetime = as.Date(datetime, 
-                              format="%d/%m/%Y %H:%M:%S"),
-                              format="%Y-%m-%d %H:%M:%S")
+# Paste the day and the time information by using strptime to 
+# get to a Date readable format by the graphing plot function  
+DateMod<-strptime(plot2data$Date, format="%d/%m/%Y", tz="UTC")
+TimeMod<-plot2data$Time
+DateTimeMod<-paste(DateMod, TimeMod)
+datetime<-strptime(DateTimeMod, format="%Y-%m-%d %H:%M:%S", tz="UTC")
 
-# Modify columns to be numeric (bit brute force)
+# Binding to rest of data 
+plot2data<-cbind(plot2data,datetime)
+
+# Modify columns to be numeric 
 plot2data$Global_active_power <-as.numeric(plot2data$Global_active_power)
 
 # Cleaning up old data files
-rm(Feb1); rm(Feb2); rm(plot1data)
+rm(Feb1); rm(Feb2); rm(plot1data); rm(plot2alldata)
+rm(DateMod); rm(TimeMod); rm(DateTimeMod)
 
 # For the plot2.png type of plot, we want a line type with 
 # a "Global Active Power" y-axis label and a x-axis variable that 
-# has both the date and the time merged together and displays
-# in terms of the day of the week on the x-axis. 
-# Main title is blank. 
+# has both the date and the time merged together such that on a 
+# line graph it'll display the day of the week. 
 
-# Create line graph
 par(mfrow=c(1,1))
 par(mar=c(4,4,2,1))
-plot(plot2data$datetime, plot2data$Global_active_power, 
-     ylab = "Global Active Power (kiloWatts)", xlab="")
+# create blank plot with axes sized based on data
+plot(plot2data$datetime, plot2data$Global_active_power, type="n", 
+     ylab="Global Active Power (kiloWatts)", xlab="")
+# add data as a line graph
+lines(plot2data$datetime, plot2data$Global_active_power)
+
 # Saves the created plot with information to directory
 # Copies the created file to the console device to save the plot to a file
 dev.copy(png, file="plot2.png", width=480, height=480, units="px",
-    res=72, pointsize=12, bg = "transparent")
-dev.off() #closes the console device (png)
-
-     
+    res=72, pointsize=10, bg = "transparent")
+dev.off() #closes the console device (pngther and displays
